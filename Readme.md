@@ -227,17 +227,15 @@ Con este si instalariamos un docker
         enabled: yes
 
 ```
-
-
-
 ## 6. Ejecutamos ansible
 
 ### Comprobamos Version y ejecutamos los playbook que hemos preparado
 
-```
+``` bash
 ansible-playbook --version
 ```
-¡[version](./imgs/01-1-ansible-version.jpg)
+
+![version](./imgs/01-1-ansible-version.jpg)
 
 
 Ejecuto el Playbook en los inventario
@@ -246,7 +244,7 @@ Ejecuto el Playbook en los inventario
 ansible-playbook -i my-inventory.ini  playbook-ping.yml
 ```
 
-¡[version](./imgs/02-ansible1.jpg)
+![Error ansible](./imgs/02-ansible1.jpg)
 
 Me da un error ya que tengo mal indetado el fichero asi que lo hago corectamente
 
@@ -275,7 +273,7 @@ y ahora si volvemos a  ejecutar y no deberia dar problemas
 ansible-playbook -i my-inventory.ini  playbook-ping.yml
 ```
 
-¡[version](./imgs/03-pings-no-llegan-ok.jpg)
+![pings](./imgs/03-pings-no-llegan-ok.jpg)
 
 Evidentemente no llegan los pings pq no tengo montados los equipos ... pero asible si que los envia. 
 Se podrian simular usando contenedores docker o minikube pero para otra. 

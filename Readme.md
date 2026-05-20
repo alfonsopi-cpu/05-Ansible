@@ -98,14 +98,23 @@ sudo apt install ansible -y
 ```
 
 
+![alt text](imgs/01-install-ansible.jpg)
 ojo si te sales tienes que volver entrar a ese ubuntu usa 
+``` bash 
 wsl -l -v
 
-
+ ``` 
+ ``` bash 
 C:\Users\usuario\Desktop\05-Ansible>wsl -l -v
   NAME              STATE           VERSION
 * docker-desktop    Stopped         2
   Ubuntu            Stopped         2
+  ``` 
+ ``` bash 
+C:\Users\usuario\Desktop\05-Ansible>wsl -d  Ubuntu
+  ```
+
+![alt text](imgs/00-recuerandowsl.jpg)
 
 ## 3. Crea un inventario con las siguientes características:
 
@@ -133,8 +142,6 @@ touch my_inventory.ini
 192.168.56.13
 ```
 
-
-
 ## 3.2 Crea un alias para el nodo de control
  my_inventory.ini 
 ```ini 
@@ -151,8 +158,9 @@ amd-node1 ansible_host=192.168.56.13
 
 
 ya podemos ahorranos las ips 
+``` bash
 ansible control-node -i inventory.ini -m ping
-
+```
 
 ## 4. Explica el `built-in` module `ping`
 
@@ -160,8 +168,11 @@ ansible control-node -i inventory.ini -m ping
 ansible all -i ./my_inventory.ini -m ping 
 ```
 
+
+Esto envia a todos **all**  del inventario **my_inventory.ini** el modulo **ping**
+
 ## 5. Crea un Playbook que instale Docker
-no es docker pero hace un ping. 
+no es docker pero hace un ping.
 
 ```yaml
 ---
@@ -172,5 +183,41 @@ no es docker pero hace un ping.
   tasks:
     - name: Ejecutar ping en los nodos
       ping:
+
+```
+
+
+con este si instalariamos un docker 
+``` yaml
+---
+- name: Instalar Docker en los nodos
+  hosts: all
+  become: yes
+
+  tasks:
+
+    - name: Actualizar paquetes
+      apt:
+        update_cache: yes
+
+    - name: Instalar dependencias
+      apt:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - software-properties-common
+        state: present
+
+    - name: Instalar Docker
+      apt:
+        name: docker.io
+        state: present
+
+    - name: Iniciar servicio Docker
+      service:
+        name: docker
+        state: started
+        enabled: yes
 
 ```

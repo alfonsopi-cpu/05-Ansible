@@ -18,9 +18,11 @@ Explica que es Ansible, y dentro del contexto de Ansible explica como se relacio
 ## Instalacion 
 
 Ansible no se puede instalar de forma nativa en Windows. Para utilizarlo como "nodo de control" desde tu equipo, debes instalar el Subsistema de Windows para Linux (WSL) y ejecutarlo sobre una distribución de Linux (como Ubuntu), lo que te permitirá gestionar tus servidores desde la comodidad de tu entorno
-
+``` shell 
 wsl --install
+```
 
+``` bash 
 sudo apt update && sudo apt upgrade -y
 
 sudo apt install software-properties-common -y
@@ -28,7 +30,7 @@ sudo apt install software-properties-common -y
 sudo add-apt-repository --yes --update ppa:ansible/ansible
 
 sudo apt install ansible -y
-
+```
 ## 3. Crea un inventario con las siguientes características:
 
 

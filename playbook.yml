@@ -1,0 +1,17 @@
+
+---
+ - name: Obtener información de los nodos
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Hacer ping a los nodos
+      ping:
+
+    - name: Mostrar hostname
+      command: hostname
+      register: hostname_output
+
+    - name: Mostrar resultado
+      debug:
+        var: hostname_output.stdout

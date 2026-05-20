@@ -2,22 +2,87 @@
  
 # Practica 05 Ansible
 ## 1. Explica que es Ansible
-Explica que es Ansible, y dentro del contexto de Ansible explica como se relacionan los siguientes terminos:
 
+
+Ansible es una herramienta de automatización de sistemas utilizada para configurar servidores, desplegar aplicaciones y administrar infraestructura de forma automática. Fue creada para simplificar tareas repetitivas de administración de sistemas y actualmente es muy usada en entornos DevOps y cloud.
+
+Una de las principales ventajas de Ansible es que funciona de manera agentless, es decir, no necesita instalar programas adicionales en los equipos remotos. Normalmente se conecta mediante SSH en Linux o WinRM en Windows para ejecutar las tareas.
 
 ## 1.1. Inventario
+
+El Inventario es el archivo donde se define qué equipos va a administrar Ansible.
+
+En este archivo se indican:
+
+ * direcciones IP
+ * nombres de host
+ * grupos de servidores
+ * variables asociadas
 
 
 ## 1.2. Playbook
 
+Un Playbook es un archivo escrito normalmente en YAML que contiene las tareas que Ansible debe ejecutar.
+
+Los Playbooks permiten automatizar procesos complejos de manera ordenada y reutilizable.
+
+Es básicamente la “receta” de automatización.
+
+ ``` yaml
+
+- hosts: web
+  become: yes
+
+  tasks:
+    - name: Instalar nginx
+      apt:
+        name: nginx
+        state: present
+```
+
+Este Playbook indica: 
+* hosts : servidores donde se aplica
+* become : Obtener privilegios de administrador
+* tasks : Ejecutar acciones sobre el grupo web Instalar Nginx
+* apt, name y  state
+
+Se lanzan ambos con 
+``` 
+ansible-playbook -i inventario.ini playbook.yml
+```
+
+
 
 ## 2. ¿Que es un ad-hoc command?
 
+En Ansible, un ad-hoc command es un comando rápido que se ejecuta directamente desde la terminal para realizar una tarea concreta en uno o varios equipos, sin necesidad de crear un Playbook.
 
+``` bash
+ansible <grupo> -m <modulo> -a "<argumentos>"
+```
+ 
+Donde:
 
-## Instalacion 
+* <grupo> → equipos del inventario
+* -m → módulo que se utilizará
+* -a → argumentos del módulo
+
+ejemplos
+
+```
+ansible all -m ping
+
+ansible web -m service -a "name=nginx state=restarted"
+
+ansible db -m apt -a "name=mysql-server state=present" --become
+
+ansible all -m copy -a "src=test.txt dest=/tmp/test.txt"
+```
+
+## Instalacion Ansible
 
 Ansible no se puede instalar de forma nativa en Windows. Para utilizarlo como "nodo de control" desde tu equipo, debes instalar el Subsistema de Windows para Linux (WSL) y ejecutarlo sobre una distribución de Linux (como Ubuntu), lo que te permitirá gestionar tus servidores desde la comodidad de tu entorno
+
 ``` shell 
 wsl --install
 ```
@@ -31,6 +96,17 @@ sudo add-apt-repository --yes --update ppa:ansible/ansible
 
 sudo apt install ansible -y
 ```
+
+
+ojo si te sales tienes que volver entrar a ese ubuntu usa 
+wsl -l -v
+
+
+C:\Users\usuario\Desktop\05-Ansible>wsl -l -v
+  NAME              STATE           VERSION
+* docker-desktop    Stopped         2
+  Ubuntu            Stopped         2
+
 ## 3. Crea un inventario con las siguientes características:
 
 
@@ -38,22 +114,45 @@ El nodo de control se encuentra en la IP: 192.168.56.10
 Los nodos con arquitectura ARM en las IPs: 192.168.56.11, 192.168.56.12
 Un nodo de arquitectura AMD en la IP: 192.168.56.13
 
-rem creas el fichero
-touch .my_inventory.ini 
 
-```ini
+``` shell 
+rem creas el fichero
+touch my_inventory.ini 
+```
+## 3.1 Crea grupos en el inventario por arquitectura de máquina, crea un grupo para el nodo de control
+
+```ini 
 [control]
 192.168.56.10
 
 [arm]
 192.168.56.11
 192.168.56.12
+
+[amd]
+192.168.56.13
 ```
 
 
-## 3.1 Crea grupos en el inventario por arquitectura de máquina, crea un grupo para el nodo de control
 
 ## 3.2 Crea un alias para el nodo de control
+ my_inventory.ini 
+```ini 
+[control]
+control-node ansible_host=192.168.56.10
+
+[arm]
+arm-node1 ansible_host=192.168.56.11
+arm-node2 ansible_host=192.168.56.12
+
+[amd]
+amd-node1 ansible_host=192.168.56.13
+```
+
+
+ya podemos ahorranos las ips 
+ansible control-node -i inventory.ini -m ping
+
 
 ## 4. Explica el `built-in` module `ping`
 
@@ -62,3 +161,16 @@ ansible all -i ./my_inventory.ini -m ping
 ```
 
 ## 5. Crea un Playbook que instale Docker
+no es docker pero hace un ping. 
+
+```yaml
+---
+- name: Comprobar conectividad de los nodos
+  hosts: all
+  become: no
+
+  tasks:
+    - name: Ejecutar ping en los nodos
+      ping:
+
+```

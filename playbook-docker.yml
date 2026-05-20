@@ -1,0 +1,31 @@
+
+---
+- name: Instalar Docker en los nodos
+- hosts: all
+- become: yes
+
+- tasks:
+
+    - name: Actualizar paquetes
+    - apt:
+      - update_cache: yes
+
+    - name: Instalar dependencias
+      apt:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - software-properties-common
+        state: present
+
+    - name: Instalar Docker
+      apt:
+        name: docker.io
+        state: present
+
+    - name: Iniciar servicio Docker
+      service:
+        name: docker
+        state: started
+        enabled: yes

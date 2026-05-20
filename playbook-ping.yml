@@ -1,10 +1,10 @@
 
 ---
  - name: Obtener información de los nodos
-  hosts: all
-  become: yes
+   hosts: all
+   become: yes
 
-  tasks:
+   tasks:
     - name: Hacer ping a los nodos
       ping:
 

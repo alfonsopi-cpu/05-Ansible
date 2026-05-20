@@ -172,33 +172,39 @@ ansible all -i ./my_inventory.ini -m ping
 Esto envia a todos **all**  del inventario **my_inventory.ini** el modulo **ping**
 
 ## 5. Crea un Playbook que instale Docker
-no es docker pero hace un ping.
+### este Playbook yaml  hace un ping a todos los equipos 
 
-```yaml
+``` yaml
 ---
-- name: Comprobar conectividad de los nodos
-  hosts: all
-  become: no
+ - name: Obtener información de los nodos
+   hosts: all
+   become: yes
 
   tasks:
-    - name: Ejecutar ping en los nodos
+    - name: Hacer ping a los nodos
       ping:
 
+    - name: Mostrar hostname
+      command: hostname
+      register: hostname_output
+
+    - name: Mostrar resultado
+      debug:
+        var: hostname_output.stdout
 ```
+Con este si instalariamos un docker 
 
-
-con este si instalariamos un docker 
 ``` yaml
 ---
 - name: Instalar Docker en los nodos
   hosts: all
   become: yes
 
-  tasks:
+- tasks:
 
     - name: Actualizar paquetes
       apt:
-        update_cache: yes
+      - update_cache: yes
 
     - name: Instalar dependencias
       apt:
@@ -220,4 +226,69 @@ con este si instalariamos un docker
         state: started
         enabled: yes
 
+```
+
+
+
+## 6. Ejecutamos ansible
+
+### Comprobamos Version y ejecutamos los playbook que hemos preparado
+
+```
+ansible-playbook --version
+```
+¡[version](./imgs/01-1-ansible-version.jpg)
+
+
+Ejecuto el Playbook en los inventario
+
+``` bash
+ansible-playbook -i my-inventory.ini  playbook-ping.yml
+```
+
+¡[version](./imgs/02-ansible1.jpg)
+
+Me da un error ya que tengo mal indetado el fichero asi que lo hago corectamente
+
+``` yaml
+---
+ - name: Obtener información de los nodos
+   hosts: all
+   become: yes
+
+   tasks:
+    - name: Hacer ping a los nodos
+      ping:
+
+    - name: Mostrar hostname
+      command: hostname
+      register: hostname_output
+
+    - name: Mostrar resultado
+      debug:
+        var: hostname_output.stdout
+
+``` 
+y ahora si volvemos a  ejecutar y no deberia dar problemas
+
+``` bash
+ansible-playbook -i my-inventory.ini  playbook-ping.yml
+```
+
+¡[version](./imgs/03-pings-no-llegan-ok.jpg)
+
+Evidentemente no llegan los pings pq no tengo montados los equipos ... pero asible si que los envia. 
+Se podrian simular usando contenedores docker o minikube pero para otra. 
+
+## 8. Subimos a git 
+
+Por ultimo pongo el resumen para volver a subirlo en el git y que no se me olvide :joy:
+
+``` bash 
+git init
+git add .
+git commit -m "Primer commit"
+git branch -M main
+git remote add origin https://github.com/USUARIO/REPO.git
+git push -u origin main
 ```
